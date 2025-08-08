@@ -1,0 +1,27 @@
+{
+  "registerUser" : {
+    "userName" : "DanAdams",
+    "password" : "Daniel@8912",
+    "firstName" : "Daniel",
+    "lastName" : "Adams",
+    "phoneNumber" : "8767908456",
+    "countryName" : "Canada",
+    "cityName" : "Vancouver",
+    "address" : "141, King Street, Vancouver",
+    "stateName" : "Columbia",
+    "postalCode" : "V5C 6N5"
+  },
+
+  "existingUser" : {
+    "userName" : "AlanDavis8623",
+    "email" : "alandavis32@mail.com",
+    "password" : "Alan$6534",
+    "city": "Montreal"
+  },
+
+  "safepayDetails" : {
+    "username" : "SafePay09",
+    "password" : "Alpha#81"
+  }
+
+}

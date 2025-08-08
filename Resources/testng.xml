@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd" >
+
+<suite name="AdvantageOnlineShopping Automation Suite">
+    <test name="AdvantageOnlineShopping tests">
+        <classes>
+            <class name="RegistrationTests"/>
+            <class name="LoginTests"/>
+            <class name="CartTests"/>
+            <class name="CheckoutTests"/>
+            <class name="SearchTests"/>
+            <class name="AccountTests"/>
+            <class name="OrderTests"/>
+        </classes>
+    </test>
+</suite>
