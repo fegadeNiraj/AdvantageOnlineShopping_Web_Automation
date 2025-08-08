@@ -1,6 +1,5 @@
 package Core;
 
-
 import io.qameta.allure.Allure;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
@@ -26,8 +25,7 @@ public class BaseTest
     }
 
     @AfterMethod
-    public void afterMethod(ITestResult result)
-    {
+    public void afterMethod(ITestResult result) throws IOException {
         softAssert.assertAll();
         if (ITestResult.FAILURE == result.getStatus()) {
             try {

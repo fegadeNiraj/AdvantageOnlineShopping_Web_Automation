@@ -18,18 +18,17 @@ import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
-
+import java.util.List;
 
 public class RegistrationTests extends BaseTest {
 
     public static String registeredUserName;
     public static String registeredUserPassword;
 
-    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 1)
-    public void TC_REG_01_validateUserRegistration() throws IOException, InterruptedException, ParseException
-    {
+    @Test(retryAnalyzer = RetryAnalyzer.class, priority = 1)
+    public void TC_REG_01_validateUserRegistration() throws IOException, InterruptedException, ParseException {
+
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
         Faker faker = new Faker();
@@ -40,23 +39,25 @@ public class RegistrationTests extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        JavascriptExecutor js =(JavascriptExecutor) driver;
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].scrollIntoView(true);", homePage.createNewAccount);
         js.executeScript("arguments[0].click();", homePage.createNewAccount);
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
 
-        Map<String,String> registerUserMap = JsonReader.getJsonMap("registerUser");
-
+        Map<String, String> registerUserMap = JsonReader.getJsonMap("registerUser");
 
         String randomUsername = registerUserMap.get("userName") + System.currentTimeMillis() % 100000;
         registeredUserName = randomUsername;
+
         registrationPage.inputUserName.sendKeys(randomUsername);
         registrationPage.inputEmailID.sendKeys(faker.internet().emailAddress());
         registrationPage.inputPassword.sendKeys(registerUserMap.get("password"));
+
         String passwordToBeConfirmed = registrationPage.inputPassword.getAttribute("value");
         registeredUserPassword = passwordToBeConfirmed;
         registrationPage.inputConfirmPassword.sendKeys(passwordToBeConfirmed);
+
         registrationPage.inputFirstName.sendKeys(registerUserMap.get("firstName"));
         registrationPage.inputLastName.sendKeys(registerUserMap.get("lastName"));
         registrationPage.inputPhoneNumber.sendKeys(registerUserMap.get("phoneNumber"));
@@ -71,6 +72,7 @@ public class RegistrationTests extends BaseTest {
             return false;
         });
         countryList.selectByVisibleText(registerUserMap.get("countryName"));
+
         registrationPage.inputCityName.sendKeys(registerUserMap.get("cityName"));
         registrationPage.inputAddress.sendKeys(registerUserMap.get("address"));
         registrationPage.inputStateName.sendKeys(registerUserMap.get("stateName"));
@@ -80,19 +82,19 @@ public class RegistrationTests extends BaseTest {
         registrationPage.userRegisterButton.click();
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.registeredUserName));
-        String registeredUserName = registrationPage.registeredUserName.getText();
+        String actualRegisteredUserName = registrationPage.registeredUserName.getText();
         String expectedUserName = randomUsername;
 
-        softAssert.assertEquals(registeredUserName,expectedUserName,"User is not registered correctly");
+        softAssert.assertEquals(actualRegisteredUserName, expectedUserName, "User is not registered correctly");
 
         System.out.println("TC_REG_01_validateUserRegistration passed successfully");
-
     }
 
-    @Test(dependsOnMethods = "TC_REG_01_validateUserRegistration",retryAnalyzer = RetryAnalyzer.class,priority = 2)
+    @Test(dependsOnMethods = "TC_REG_01_validateUserRegistration", retryAnalyzer = RetryAnalyzer.class, priority = 2)
     public void TC_REG_02_validateRegistrationWithExistingUsername() throws IOException, ParseException, InterruptedException {
+
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-        JavascriptExecutor js =(JavascriptExecutor) driver;
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         Faker fakeData = new Faker();
 
         HomePage homePage = new HomePage(driver);
@@ -100,12 +102,13 @@ public class RegistrationTests extends BaseTest {
 
         homePage.launchHomePage();
         WaitUtils.waitForElementToBeInvisible(driver);
-        homePage.userIcon.click();
 
+        homePage.userIcon.click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        js.executeScript("arguments[0].scrollIntoView(true)",homePage.createNewAccount);
-        js.executeScript("arguments[0].click()",homePage.createNewAccount);
+        js.executeScript("arguments[0].scrollIntoView(true)", homePage.createNewAccount);
+        js.executeScript("arguments[0].click()", homePage.createNewAccount);
+
         String registerPageUrl = driver.getCurrentUrl();
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
@@ -113,33 +116,37 @@ public class RegistrationTests extends BaseTest {
         registrationPage.inputUserName.sendKeys(registeredUserName);
         registrationPage.inputEmailID.sendKeys(fakeData.internet().emailAddress());
         registrationPage.inputPassword.sendKeys(registeredUserPassword);
+
         String passwordToBeConfirmed = registrationPage.inputPassword.getAttribute("value");
-        softAssert.assertNotNull(passwordToBeConfirmed,"Password confirmation should not be null");
+        softAssert.assertNotNull(passwordToBeConfirmed, "Password confirmation should not be null");
         registrationPage.inputConfirmPassword.sendKeys(passwordToBeConfirmed);
 
         registrationPage.userRegisterAgreeCheckbox.click();
         registrationPage.userRegisterButton.click();
 
         wait.until(ExpectedConditions.textToBePresentInElement(registrationPage.userAlreadyExistsMessage, Constant.USERNAME_ALREADYEXISTS_ERRORMESSAGE));
-        softAssert.assertEquals(registrationPage.userAlreadyExistsMessage.getText(),Constant.USERNAME_ALREADYEXISTS_ERRORMESSAGE,"Expected error message 'User name already exists' was not displayed.");
-        softAssert.assertEquals(driver.getCurrentUrl(),registerPageUrl,"User is not on the registration page. URL mismatch after registration failure.");
+        softAssert.assertEquals(registrationPage.userAlreadyExistsMessage.getText(), Constant.USERNAME_ALREADYEXISTS_ERRORMESSAGE,
+                "Expected error message 'User name already exists' was not displayed.");
+        softAssert.assertEquals(driver.getCurrentUrl(), registerPageUrl,
+                "User is not on the registration page. URL mismatch after registration failure.");
 
         System.out.println("TC_REG_02_validateRegistrationWithExistingUsername passed successfully");
     }
 
-    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 3)
-    public void TC_REG_03_validateRequiredErrorsOnEmptyFields() throws IOException, InterruptedException
-    {
+    @Test(retryAnalyzer = RetryAnalyzer.class, priority = 3)
+    public void TC_REG_03_validateRequiredErrorsOnEmptyFields() throws IOException, InterruptedException {
+
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
 
         homePage.launchHomePage();
+
         homePage.userIcon.click();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        JavascriptExecutor js =(JavascriptExecutor) driver;
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].scrollIntoView(true);", homePage.createNewAccount);
         js.executeScript("arguments[0].click();", homePage.createNewAccount);
 
@@ -147,10 +154,13 @@ public class RegistrationTests extends BaseTest {
 
         registrationPage.inputUserName.click();
         registrationPage.inputUserName.sendKeys(Keys.TAB);
+
         registrationPage.inputEmailID.click();
         registrationPage.inputEmailID.sendKeys(Keys.TAB);
+
         registrationPage.inputPassword.click();
         registrationPage.inputPassword.sendKeys(Keys.TAB);
+
         registrationPage.inputConfirmPassword.click();
         registrationPage.inputConfirmPassword.sendKeys(Keys.TAB);
 
@@ -163,29 +173,31 @@ public class RegistrationTests extends BaseTest {
         );
 
         for (String errorMessage : Constant.VALIDATION_ERROR_MESSAGES) {
-            softAssert.assertTrue(actualMessages.contains(errorMessage),"missing expected validation message"+errorMessage);
+            softAssert.assertTrue(actualMessages.contains(errorMessage),
+                    "Missing expected validation message: " + errorMessage);
         }
-
         System.out.println("TC_REG_03_validateRequiredErrorsOnEmptyFields passed successfully");
-
     }
 
-    @Test(dataProvider = "invalidEmailID",dataProviderClass = DataProviders.class,priority = 4,retryAnalyzer = RetryAnalyzer.class)
+    @Test(dataProvider = "invalidEmailID", dataProviderClass = DataProviders.class, priority = 4, retryAnalyzer = RetryAnalyzer.class)
     public void TC_REG_04_validateRequiredValidationsOnInvalidEmailFormat(String emailID) throws IOException {
+
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
 
         homePage.launchHomePage();
+
         homePage.userIcon.click();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        JavascriptExecutor js =(JavascriptExecutor) driver;
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         js.executeScript("arguments[0].scrollIntoView(true);", homePage.createNewAccount);
         js.executeScript("arguments[0].click();", homePage.createNewAccount);
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
+
         registrationPage.inputEmailID.sendKeys(emailID);
         registrationPage.inputEmailID.sendKeys(Keys.TAB);
 
@@ -194,9 +206,8 @@ public class RegistrationTests extends BaseTest {
                         "return label;"
         );
 
-        softAssert.assertEquals(actualErrorMessage,Constant.INVALID_EMAIL_FORMAT_ERROR_MESSAGE,"missing expected validation message for Email ID");
-
+        softAssert.assertEquals(actualErrorMessage, Constant.INVALID_EMAIL_FORMAT_ERROR_MESSAGE,
+                "Missing expected validation message for Email ID");
         System.out.println("TC_REG_04_validateRequiredValidationsOnInvalidEmailFormat passed successfully");
     }
-
 }
