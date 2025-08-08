@@ -49,5 +49,4 @@ public class ProductPage {
 
     @FindBy(css = "div.plus")
     public WebElement increaseQuantity;
-
 }

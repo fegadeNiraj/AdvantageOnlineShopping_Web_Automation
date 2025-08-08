@@ -1,15 +1,9 @@
 package Pages;
 
-import Util.PropertyReader;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-
-import java.io.IOException;
-import java.time.Duration;
 
 public class RegistrationPage
 {
@@ -21,9 +15,6 @@ public class RegistrationPage
         PageFactory.initElements(driver,this);
     }
 
-
-
-    //User Registration Form Details
     @FindBy(id = "form")
     public WebElement createNewAccountForm;
 
@@ -74,5 +65,4 @@ public class RegistrationPage
 
     @FindBy(xpath = "//label[@data-ng-show='!registerSuccess']")
     public WebElement userAlreadyExistsMessage;
-
 }

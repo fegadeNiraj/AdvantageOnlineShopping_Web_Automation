@@ -44,7 +44,7 @@ public class DriverManager
 
                 driver = new ChromeDriver(options);
                 break;
-
+            // will be adding extra cases according to the browser types.
             default :
                 System.setProperty("webdriver.chrome.driver",PropertyReader.getProperty("chromeDriverPath"));
                 driver = new ChromeDriver();

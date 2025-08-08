@@ -15,7 +15,6 @@ public class LoginPage {
         PageFactory.initElements(driver,this);
     }
 
-
     @FindBy(name = "username")
     public WebElement inputLoginFormUserName;
 
@@ -33,5 +32,4 @@ public class LoginPage {
 
     @FindBy(xpath = "//label[@role='link'][normalize-space()='Sign out']")
     public WebElement singOutButton;
-
 }

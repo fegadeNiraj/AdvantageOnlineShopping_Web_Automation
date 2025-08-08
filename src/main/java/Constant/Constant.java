@@ -21,5 +21,4 @@ public class Constant {
     public static final String NO_SEARCH_RESULT_ERROR_MESSAGE = "No search results found.";
     public static final String EMPTY_CART_MESSAGE = "Your shopping cart is empty";
 
-
 }

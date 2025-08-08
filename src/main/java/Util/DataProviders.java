@@ -4,7 +4,6 @@ import org.testng.annotations.DataProvider;
 
 public class DataProviders
 {
-
     @DataProvider(name = "invalidEmailID")
     public static Object[][] invalidEmailID(){
         return new Object[][]{

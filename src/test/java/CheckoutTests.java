@@ -19,7 +19,7 @@ import java.util.Map;
 public class CheckoutTests extends BaseTest
 {
 
-    @Test(retryAnalyzer = RetryAnalyzer.class)
+    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 1)
     public void TC_CHECKOUT_01_validateProductCheckout() throws IOException, ParseException {
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
@@ -131,7 +131,7 @@ public class CheckoutTests extends BaseTest
         System.out.println("TC_CHECKOUT_01_validateProductCheckout passed successfully");
     }
 
-    @Test(retryAnalyzer = RetryAnalyzer.class)
+    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 2)
     public void TC_CHECKOUT_02_validateProductCheckoutWithoutLogin() throws IOException {
         HomePage homePage = new HomePage(driver);
         ProductPage productPage = new ProductPage(driver);

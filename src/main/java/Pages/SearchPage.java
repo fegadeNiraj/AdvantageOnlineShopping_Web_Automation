@@ -15,7 +15,6 @@ public class SearchPage
         PageFactory.initElements(driver,this);
     }
 
-
     @FindBy(xpath = "//a[@title='SEARCH']")
     public WebElement searchIcon;
 
@@ -27,5 +26,4 @@ public class SearchPage
 
     @FindBy(xpath = "//label[contains(text(),'No search results found.')]")
     public WebElement searchResultError;
-
 }
