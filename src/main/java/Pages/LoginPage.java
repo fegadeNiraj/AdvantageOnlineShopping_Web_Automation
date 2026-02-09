@@ -43,4 +43,8 @@ public class LoginPage {
         return loggedInUserName.getText();
     }
 
+    public String getLoginErrorMessage() {
+        return loginErrorMessage.getText();
+    }
+
 }

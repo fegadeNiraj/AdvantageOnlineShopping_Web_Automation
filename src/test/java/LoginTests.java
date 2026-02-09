@@ -61,28 +61,50 @@ public class LoginTests extends BaseTest {
         System.out.println("TC_LOGIN_01_validateLoginUser passed successfully");
     }
 
-    @Test(dependsOnMethods = "RegistrationTests.TC_REG_01_validateUserRegistration", retryAnalyzer = RetryAnalyzer.class,priority = 2)
-    public void TC_LOGIN_02_validateLoginUserWithInvalidPassword() throws IOException, InterruptedException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+    @Test(
+            dependsOnMethods = "RegistrationTests.TC_REG_01_validateUserRegistration",
+            retryAnalyzer = RetryAnalyzer.class,
+            priority = 2
+    )
+    public void TC_LOGIN_02_validateLoginUserWithInvalidPassword()
+            throws IOException {
 
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         homePage.launchHomePage();
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(TestContext.registeredUserName);
-        String userName = loginPage.inputLoginFormUserName.getAttribute("value");
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormPassword)).sendKeys(Constant.USER_INCORRECT_LOGINPASSWORD);
+        loginPage.login(
+                TestContext.registeredUserName,
+                Constant.USER_INCORRECT_LOGINPASSWORD
+        );
 
-        loginPage.loginFormSignInButton.click();
-        wait.until(ExpectedConditions.textToBePresentInElement(loginPage.loginErrorMessage,Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE));
+        wait.until(
+                ExpectedConditions.textToBePresentInElement(
+                        loginPage.loginErrorMessage,
+                        Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE
+                )
+        );
 
-        softAssert.assertEquals(loginPage.loginErrorMessage.getText(),Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE,"Failed to get 'Incorrect user name or password' message");
-        softAssert.assertEquals(driver.getCurrentUrl(),Constant.INCORRECT_LOGIN_URL,"Current URL did not match the expected incorrect login URL after failed login attempt.");
+        softAssert.assertEquals(
+                loginPage.getLoginErrorMessage(),
+                Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE,
+                "Failed to get 'Incorrect user name or password' message"
+        );
 
-        System.out.println("TC_LOGIN_02_validateLoginUserWithInvalidPassword passed successfully");
+        softAssert.assertEquals(
+                driver.getCurrentUrl(),
+                Constant.INCORRECT_LOGIN_URL,
+                "Current URL did not match the expected incorrect login URL after failed login attempt."
+        );
+
+        System.out.println(
+                "TC_LOGIN_02_validateLoginUserWithInvalidPassword passed successfully"
+        );
     }
 
     @Test(retryAnalyzer = RetryAnalyzer.class,priority = 3)
