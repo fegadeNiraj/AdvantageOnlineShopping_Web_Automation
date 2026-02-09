@@ -23,79 +23,72 @@ import java.util.Map;
 public class CartTests extends BaseTest {
 
     @Test(retryAnalyzer = RetryAnalyzer.class, priority = 1)
-    public void TC_CART_01_validateAddProductToCart() throws IOException, ParseException, InterruptedException {
+    public void TC_CART_01_validateAddProductToCart()
+            throws IOException, ParseException, InterruptedException {
+
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
         ProductPage productPage = new ProductPage(driver);
-        CheckoutPage checkoutPage = new CheckoutPage(driver);
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
+        // ---------- Launch & Login ----------
         homePage.launchHomePage();
-
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
         js.executeScript("arguments[0].click();", homePage.getUserIcon());
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
+        loginPage.login(
+                userLoginDetails.get("userName"),
+                userLoginDetails.get("password")
+        );
 
-        js.executeScript("arguments[0].scrollIntoView(true);", loginPage.inputLoginFormUserName);
-        loginPage.inputLoginFormUserName.sendKeys(userLoginDetails.get("userName"));
+        wait.until(d -> !loginPage.getLoggedInUserName().isEmpty());
 
-        js.executeScript("arguments[0].scrollIntoView(true);", loginPage.inputLoginFormPassword);
-        loginPage.inputLoginFormPassword.sendKeys(userLoginDetails.get("password"));
-
-        js.executeScript("arguments[0].scrollIntoView(true);", loginPage.loginFormSignInButton);
-        js.executeScript("arguments[0].click();", loginPage.loginFormSignInButton);
-
-        wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
-
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.laptops);
+        // ---------- Navigate to Product ----------
         js.executeScript("arguments[0].click();", productPage.laptops);
-
         WaitUtils.waitForElementToBeInvisible(driver);
         wait.until(ExpectedConditions.visibilityOfAllElements(productPage.laptopsList));
 
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.laptopToBeSelected);
         js.executeScript("arguments[0].click();", productPage.laptopToBeSelected);
-
         wait.until(ExpectedConditions.visibilityOf(productPage.laptopToBeSelectedDescription));
 
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.selectGreyColor);
         js.executeScript("arguments[0].click();", productPage.selectGreyColor);
 
-        // Get initial cart count
-        String cartCountStr = (String) js.executeScript(
+        // ---------- Capture cart count before ----------
+        String cartCountBeforeStr = (String) js.executeScript(
                 "return document.querySelector('#shoppingCartLink .cart').textContent.trim();"
         );
-        softAssert.assertNotNull(cartCountStr, "Initial cart count is null");
-        int cartCountBefore = cartCountStr.isEmpty() ? 0 : Integer.parseInt(cartCountStr);
+        int cartCountBefore = cartCountBeforeStr.isEmpty()
+                ? 0
+                : Integer.parseInt(cartCountBeforeStr);
 
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.addToCartButton);
+        // ---------- Add to cart ----------
         js.executeScript("arguments[0].click();", productPage.addToCartButton);
 
-        // Wait until cart count increases by 1
         wait.until(driver -> {
-            String updatedStr = (String) js.executeScript(
+            String updated = (String) js.executeScript(
                     "return document.querySelector('#shoppingCartLink .cart').textContent.trim();"
             );
-            if (updatedStr == null || updatedStr.isEmpty()) return false;
-            int updatedCount = Integer.parseInt(updatedStr);
-            return updatedCount == cartCountBefore + 1;
+            if (updated == null || updated.isEmpty()) return false;
+            return Integer.parseInt(updated) == cartCountBefore + 1;
         });
 
-        // Final verification
+        // ---------- Final assertion ----------
         String cartCountAfterStr = (String) js.executeScript(
                 "return document.querySelector('#shoppingCartLink .cart').textContent.trim();"
         );
-        softAssert.assertNotNull(cartCountAfterStr, "Updated cart count is null");
         int cartCountAfter = Integer.parseInt(cartCountAfterStr);
-        softAssert.assertEquals(cartCountAfter, cartCountBefore + 1, "Cart count should increase by 1");
+
+        softAssert.assertEquals(
+                cartCountAfter,
+                cartCountBefore + 1,
+                "Cart count should increase by 1"
+        );
 
         System.out.println("TC_CART_01_validateAddProductToCart passed successfully");
     }
-
 
     @Test(retryAnalyzer = RetryAnalyzer.class, priority = 2)
     public void TC_CART_02_validateRemoveProductFromCart() throws IOException, ParseException, InterruptedException {
