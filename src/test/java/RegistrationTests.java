@@ -25,7 +25,7 @@ public class RegistrationTests extends BaseTest {
 
     @Test(retryAnalyzer = RetryAnalyzer.class, priority = 1)
     public void TC_REG_01_validateUserRegistration()
-            throws IOException, InterruptedException, ParseException {
+            throws IOException, ParseException {
 
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
@@ -81,15 +81,19 @@ public class RegistrationTests extends BaseTest {
         System.out.println("TC_REG_01_validateUserRegistration passed successfully");
     }
 
-    @Test(dependsOnMethods = "TC_REG_01_validateUserRegistration", retryAnalyzer = RetryAnalyzer.class, priority = 2)
-    public void TC_REG_02_validateRegistrationWithExistingUsername() throws IOException, ParseException, InterruptedException {
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        Faker fakeData = new Faker();
+    @Test(
+            dependsOnMethods = "TC_REG_01_validateUserRegistration",
+            retryAnalyzer = RetryAnalyzer.class,
+            priority = 2
+    )
+    public void TC_REG_02_validateRegistrationWithExistingUsername()
+            throws IOException {
 
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
+        Faker faker = new Faker();
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         homePage.launchHomePage();
         WaitUtils.waitForElementToBeInvisible(driver);
@@ -102,24 +106,39 @@ public class RegistrationTests extends BaseTest {
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
 
-        registrationPage.inputUserName.sendKeys(TestContext.registeredUserName);
-        registrationPage.inputEmailID.sendKeys(fakeData.internet().emailAddress());
-        registrationPage.inputPassword.sendKeys(TestContext.registeredUserPassword);
+        registrationPage.fillBasicDetails(
+                TestContext.registeredUserName,
+                faker.internet().emailAddress(),
+                TestContext.registeredUserPassword,
+                "",     // first name not required
+                "",     // last name not required
+                ""      // phone not required
+        );
 
-        String passwordToBeConfirmed = registrationPage.inputPassword.getAttribute("value");
-        softAssert.assertNotNull(passwordToBeConfirmed, "Password confirmation should not be null");
-        registrationPage.inputConfirmPassword.sendKeys(passwordToBeConfirmed);
+        registrationPage.submitRegistration();
 
-        registrationPage.userRegisterAgreeCheckbox.click();
-        registrationPage.userRegisterButton.click();
+        wait.until(
+                ExpectedConditions.textToBePresentInElement(
+                        registrationPage.userAlreadyExistsMessage,
+                        Constant.USERNAME_ALREADYEXISTS_ERRORMESSAGE
+                )
+        );
 
-        wait.until(ExpectedConditions.textToBePresentInElement(registrationPage.userAlreadyExistsMessage, Constant.USERNAME_ALREADYEXISTS_ERRORMESSAGE));
-        softAssert.assertEquals(registrationPage.userAlreadyExistsMessage.getText(), Constant.USERNAME_ALREADYEXISTS_ERRORMESSAGE,
-                "Expected error message 'User name already exists' was not displayed.");
-        softAssert.assertEquals(driver.getCurrentUrl(), registerPageUrl,
-                "User is not on the registration page. URL mismatch after registration failure.");
+        softAssert.assertEquals(
+                registrationPage.userAlreadyExistsMessage.getText(),
+                Constant.USERNAME_ALREADYEXISTS_ERRORMESSAGE,
+                "Expected error message 'User name already exists' was not displayed."
+        );
 
-        System.out.println("TC_REG_02_validateRegistrationWithExistingUsername passed successfully");
+        softAssert.assertEquals(
+                driver.getCurrentUrl(),
+                registerPageUrl,
+                "User is not on the registration page. URL mismatch after registration failure."
+        );
+
+        System.out.println(
+                "TC_REG_02_validateRegistrationWithExistingUsername passed successfully"
+        );
     }
 
     @Test(retryAnalyzer = RetryAnalyzer.class, priority = 3)
