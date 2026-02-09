@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.time.Duration;
 
 public class HomePage {
-    public WebDriver driver;
+    private WebDriver driver;
 
     public HomePage(WebDriver driver)
     {
@@ -21,13 +21,13 @@ public class HomePage {
     }
 
     @FindBy(xpath = "//header[@ng-show='welcome']")
-    public WebElement homePageHeader;
+    private WebElement homePageHeader;
 
     @FindBy(id = "hrefUserIcon")
-    public WebElement userIcon;
+    private WebElement userIcon;
 
     @FindBy(xpath = "//a[normalize-space()='CREATE NEW ACCOUNT']")
-    public WebElement createNewAccount;
+    private WebElement createNewAccount;
 
     public void launchHomePage() throws IOException {
         driver.get(PropertyReader.getProperty("baseUrl"));
@@ -35,5 +35,13 @@ public class HomePage {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         wait.until(ExpectedConditions.visibilityOf(homePageHeader));
 
+    }
+
+    public WebElement getUserIcon(){
+        return userIcon;
+    }
+
+    public WebElement getCreateNewAccount(){
+        return createNewAccount;
     }
 }

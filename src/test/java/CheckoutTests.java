@@ -31,8 +31,8 @@ public class CheckoutTests extends BaseTest
 
         // Step 1: Launch home page and open login form
         homePage.launchHomePage();
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
         WaitUtils.waitForElementToBeInvisible(driver);
 
         // Step 2: Login as existing user

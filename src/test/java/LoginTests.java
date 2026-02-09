@@ -27,7 +27,7 @@ public class LoginTests extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
 
         homePage.launchHomePage();
-        wait.until(ExpectedConditions.elementToBeClickable(homePage.userIcon)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
         loginPage.inputLoginFormUserName.sendKeys(RegistrationTests.registeredUserName);
@@ -54,7 +54,7 @@ public class LoginTests extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
 
         homePage.launchHomePage();
-        wait.until(ExpectedConditions.elementToBeClickable(homePage.userIcon)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
         wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(RegistrationTests.registeredUserName);
@@ -78,7 +78,7 @@ public class LoginTests extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
 
         homePage.launchHomePage();
-        wait.until(ExpectedConditions.elementToBeClickable(homePage.userIcon)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");
@@ -90,7 +90,7 @@ public class LoginTests extends BaseTest {
 
         loginPage.loginFormSignInButton.click();
         wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
-        wait.until(ExpectedConditions.elementToBeClickable(homePage.userIcon)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         wait.until(ExpectedConditions.elementToBeClickable(loginPage.singOutButton)).click();
         wait.until(ExpectedConditions.invisibilityOf(loginPage.loggedInUserName));
 
@@ -108,7 +108,7 @@ public class LoginTests extends BaseTest {
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         homePage.launchHomePage();
-        wait.until(ExpectedConditions.elementToBeClickable(homePage.userIcon)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
         Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");
         String password = userLoginDetails.get("password");
@@ -132,7 +132,7 @@ public class LoginTests extends BaseTest {
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         homePage.launchHomePage();
-        wait.until(ExpectedConditions.elementToBeClickable(homePage.userIcon)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
         Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");
         String username = userLoginDetails.get("userName");
@@ -157,7 +157,7 @@ public class LoginTests extends BaseTest {
         LoginPage loginPage = new LoginPage(driver);
 
         homePage.launchHomePage();
-        wait.until(ExpectedConditions.elementToBeClickable(homePage.userIcon)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");

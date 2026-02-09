@@ -34,9 +34,9 @@ public class OrderTests extends BaseTest {
 
         homePage.launchHomePage();
 
-        wait.until(ExpectedConditions.visibilityOf(homePage.userIcon));
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        wait.until(ExpectedConditions.visibilityOf(homePage.getUserIcon()));
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
 
         WaitUtils.waitForElementToBeInvisible(driver);
 
@@ -50,9 +50,9 @@ public class OrderTests extends BaseTest {
 
         wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
 
-        wait.until(ExpectedConditions.visibilityOf(homePage.userIcon));
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        wait.until(ExpectedConditions.visibilityOf(homePage.getUserIcon()));
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
 
         wait.until(ExpectedConditions.visibilityOf(accountPage.myOrdersButton));
         js.executeScript("arguments[0].scrollIntoView(true);", accountPage.myOrdersButton);
@@ -87,9 +87,9 @@ public class OrderTests extends BaseTest {
 
         homePage.launchHomePage();
 
-        wait.until(ExpectedConditions.visibilityOf(homePage.userIcon));
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        wait.until(ExpectedConditions.visibilityOf(homePage.getUserIcon()));
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
 
         WaitUtils.waitForElementToBeInvisible(driver);
 
@@ -103,9 +103,9 @@ public class OrderTests extends BaseTest {
 
         wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
 
-        wait.until(ExpectedConditions.visibilityOf(homePage.userIcon));
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        wait.until(ExpectedConditions.visibilityOf(homePage.getUserIcon()));
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
 
         wait.until(ExpectedConditions.visibilityOf(accountPage.myOrdersButton));
         js.executeScript("arguments[0].scrollIntoView(true);", accountPage.myOrdersButton);

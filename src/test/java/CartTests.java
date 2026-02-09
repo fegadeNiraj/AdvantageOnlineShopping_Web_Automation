@@ -34,8 +34,8 @@ public class CartTests extends BaseTest {
 
         homePage.launchHomePage();
 
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
@@ -110,8 +110,8 @@ public class CartTests extends BaseTest {
         // Launch home page and login
         homePage.launchHomePage();
 
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
@@ -207,8 +207,8 @@ public class CartTests extends BaseTest {
 
         homePage.launchHomePage();
 
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.userIcon);
-        js.executeScript("arguments[0].click();", homePage.userIcon);
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
+        js.executeScript("arguments[0].click();", homePage.getUserIcon());
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");

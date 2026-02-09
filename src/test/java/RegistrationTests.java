@@ -34,14 +34,14 @@ public class RegistrationTests extends BaseTest {
         Faker faker = new Faker();
 
         homePage.launchHomePage();
-        homePage.userIcon.click();
+        homePage.getUserIcon().click();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         WaitUtils.waitForElementToBeInvisible(driver);
 
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.createNewAccount);
-        js.executeScript("arguments[0].click();", homePage.createNewAccount);
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getCreateNewAccount());
+        js.executeScript("arguments[0].click();", homePage.getCreateNewAccount());
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
 
@@ -103,11 +103,11 @@ public class RegistrationTests extends BaseTest {
         homePage.launchHomePage();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        homePage.userIcon.click();
+        homePage.getUserIcon().click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        js.executeScript("arguments[0].scrollIntoView(true)", homePage.createNewAccount);
-        js.executeScript("arguments[0].click()", homePage.createNewAccount);
+        js.executeScript("arguments[0].scrollIntoView(true)", homePage.getCreateNewAccount());
+        js.executeScript("arguments[0].click()", homePage.getCreateNewAccount());
 
         String registerPageUrl = driver.getCurrentUrl();
 
@@ -141,14 +141,14 @@ public class RegistrationTests extends BaseTest {
 
         homePage.launchHomePage();
 
-        homePage.userIcon.click();
+        homePage.getUserIcon().click();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WaitUtils.waitForElementToBeInvisible(driver);
 
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.createNewAccount);
-        js.executeScript("arguments[0].click();", homePage.createNewAccount);
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getCreateNewAccount());
+        js.executeScript("arguments[0].click();", homePage.getCreateNewAccount());
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
 
@@ -187,14 +187,14 @@ public class RegistrationTests extends BaseTest {
 
         homePage.launchHomePage();
 
-        homePage.userIcon.click();
+        homePage.getUserIcon().click();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WaitUtils.waitForElementToBeInvisible(driver);
 
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.createNewAccount);
-        js.executeScript("arguments[0].click();", homePage.createNewAccount);
+        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getCreateNewAccount());
+        js.executeScript("arguments[0].click();", homePage.getCreateNewAccount());
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
 
