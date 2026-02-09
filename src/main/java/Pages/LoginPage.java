@@ -47,4 +47,12 @@ public class LoginPage {
         return loginErrorMessage.getText();
     }
 
+
+    public void logout() {
+        singOutButton.click();
+    }
+
+    public boolean isUserLoggedIn() {
+        return !loggedInUserName.getText().trim().isEmpty();
+    }
 }

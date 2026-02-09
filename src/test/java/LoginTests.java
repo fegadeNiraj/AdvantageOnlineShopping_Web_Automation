@@ -107,33 +107,41 @@ public class LoginTests extends BaseTest {
         );
     }
 
-    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 3)
-    public void TC_LOGOUT_01_validateLogoutUser() throws IOException, ParseException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+    @Test(retryAnalyzer = RetryAnalyzer.class, priority = 3)
+    public void TC_LOGOUT_01_validateLogoutUser()
+            throws IOException, ParseException {
 
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         homePage.launchHomePage();
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");
+        Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
         String username = userLoginDetails.get("userName");
         String password = userLoginDetails.get("password");
 
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(username);
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormPassword)).sendKeys(password);
+        loginPage.login(username, password);
 
-        loginPage.loginFormSignInButton.click();
-        wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
+        // wait for successful login
+        wait.until(d -> loginPage.isUserLoggedIn());
+
+        // perform logout
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
-        wait.until(ExpectedConditions.elementToBeClickable(loginPage.singOutButton)).click();
-        wait.until(ExpectedConditions.invisibilityOf(loginPage.loggedInUserName));
+        loginPage.logout();
 
-        softAssert.assertTrue(loginPage.loggedInUserName.getText().trim().isEmpty(),"Something wrong... failed to logout user");
+        // wait for logout to complete
+        wait.until(d -> !loginPage.isUserLoggedIn());
+
+        softAssert.assertFalse(
+                loginPage.isUserLoggedIn(),
+                "Something wrong... failed to logout user"
+        );
+
         System.out.println("TC_LOGOUT_01_validateLogoutUser passed successfully");
-
     }
 
     @Test(retryAnalyzer = RetryAnalyzer.class,priority = 4)
