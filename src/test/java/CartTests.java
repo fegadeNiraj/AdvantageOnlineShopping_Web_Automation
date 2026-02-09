@@ -195,112 +195,100 @@ public class CartTests extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
+        // ---------- Launch & Login ----------
         homePage.launchHomePage();
-
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
         js.executeScript("arguments[0].click();", homePage.getUserIcon());
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
-        loginPage.inputLoginFormUserName.sendKeys(userLoginDetails.get("userName"));
-        loginPage.inputLoginFormPassword.sendKeys(userLoginDetails.get("password"));
+        loginPage.login(
+                userLoginDetails.get("userName"),
+                userLoginDetails.get("password")
+        );
 
-        js.executeScript("arguments[0].scrollIntoView(true);", loginPage.loginFormSignInButton);
-        js.executeScript("arguments[0].click();", loginPage.loginFormSignInButton);
+        wait.until(d -> !loginPage.getLoggedInUserName().isEmpty());
 
-        wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
-
+        // ---------- Navigate & Add Product ----------
         wait.until(ExpectedConditions.visibilityOf(productPage.laptops));
         js.executeScript("arguments[0].scrollIntoView(true);", productPage.laptops);
         js.executeScript("arguments[0].click();", productPage.laptops);
-
         WaitUtils.waitForElementToBeInvisible(driver);
 
         wait.until(ExpectedConditions.visibilityOf(productPage.laptopToBeSelected));
         js.executeScript("arguments[0].scrollIntoView(true);", productPage.laptopToBeSelected);
         js.executeScript("arguments[0].click();", productPage.laptopToBeSelected);
 
-        String selectedProduct = productPage.laptopToBeSelected.getText().trim().toUpperCase();
+        String selectedProduct =
+                productPage.laptopToBeSelected.getText().trim().toUpperCase();
 
         wait.until(ExpectedConditions.visibilityOf(productPage.laptopToBeSelectedDescription));
-        wait.until(ExpectedConditions.elementToBeClickable(productPage.selectGreyColor));
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.selectGreyColor);
         js.executeScript("arguments[0].click();", productPage.selectGreyColor);
 
-        // Get initial cart count
-        String cartCountStr = (String) js.executeScript(
+        String cartCountBeforeStr = (String) js.executeScript(
                 "return document.querySelector('#shoppingCartLink .cart').textContent.trim();"
         );
+        int cartCountBefore = cartCountBeforeStr.isEmpty()
+                ? 0
+                : Integer.parseInt(cartCountBeforeStr);
 
-        softAssert.assertNotNull(cartCountStr, "Initial cart count is null");
-        int cartCountBefore = cartCountStr.isEmpty() ? 0 : Integer.parseInt(cartCountStr);
-
-        wait.until(ExpectedConditions.elementToBeClickable(productPage.addToCartButton));
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.addToCartButton);
         js.executeScript("arguments[0].click();", productPage.addToCartButton);
 
-        // Wait for cart count to increase by 1
         wait.until(driver -> {
-            String updatedStr = (String) js.executeScript(
+            String updated = (String) js.executeScript(
                     "return document.querySelector('#shoppingCartLink .cart').textContent.trim();"
             );
-            if (updatedStr == null || updatedStr.isEmpty()) return false;
-            int updatedCount = Integer.parseInt(updatedStr);
-            return updatedCount == cartCountBefore + 1;
+            return updated != null
+                    && !updated.isEmpty()
+                    && Integer.parseInt(updated) == cartCountBefore + 1;
         });
 
-        wait.until(ExpectedConditions.elementToBeClickable(checkoutPage.cartIcon));
-        js.executeScript("arguments[0].scrollIntoView(true);", checkoutPage.cartIcon);
+        // ---------- Open Cart ----------
         js.executeScript("arguments[0].click();", checkoutPage.cartIcon);
-
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#shoppingCart")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#shoppingCart tbody tr")));
 
-        List<WebElement> cartRows = driver.findElements(By.cssSelector("#shoppingCart tbody tr"));
+        List<WebElement> cartRows =
+                driver.findElements(By.cssSelector("#shoppingCart tbody tr"));
+
         int initialQuantity = 0;
 
         for (WebElement row : cartRows) {
-            WebElement productNameElement = row.findElement(By.cssSelector("label.productName"));
-            WebElement productQuantityElement = row.findElement(By.cssSelector("td.smollCell.quantityMobile label.ng-binding"));
+            String productName =
+                    row.findElement(By.cssSelector("label.productName"))
+                            .getText()
+                            .trim();
 
-            String productQuantityString = productQuantityElement.getText().trim();
-            initialQuantity = Integer.parseInt(productQuantityString);
-
-            String productName = productNameElement.getText().trim();
             if (productName.equals(selectedProduct)) {
+                WebElement quantityLabel =
+                        row.findElement(By.cssSelector("td.smollCell.quantityMobile label.ng-binding"));
+                initialQuantity = Integer.parseInt(quantityLabel.getText().trim());
+
                 WebElement editButton = row.findElement(By.cssSelector("a.edit"));
-                js.executeScript("arguments[0].scrollIntoView(true);", editButton);
                 js.executeScript("arguments[0].click();", editButton);
                 break;
             }
         }
 
+        // ---------- Update Quantity ----------
         wait.until(ExpectedConditions.visibilityOf(productPage.increaseQuantity));
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.increaseQuantity);
         js.executeScript("arguments[0].click();", productPage.increaseQuantity);
 
-        wait.until(ExpectedConditions.elementToBeClickable(productPage.addToCartButton));
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.addToCartButton);
         js.executeScript("arguments[0].click();", productPage.addToCartButton);
-
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        wait.until(ExpectedConditions.elementToBeClickable(checkoutPage.cartIcon));
-        js.executeScript("arguments[0].scrollIntoView(true);", checkoutPage.cartIcon);
+        // ---------- Verify Updated Quantity ----------
         js.executeScript("arguments[0].click();", checkoutPage.cartIcon);
-
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#shoppingCart")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#shoppingCart tbody tr")));
 
-        List<WebElement> cartRowsAfterUpdate = driver.findElements(By.cssSelector("#shoppingCart tbody tr"));
+        List<WebElement> cartRowsAfterUpdate =
+                driver.findElements(By.cssSelector("#shoppingCart tbody tr"));
 
         for (WebElement row : cartRowsAfterUpdate) {
-            WebElement productQuantityElement = row.findElement(By.cssSelector("td.smollCell.quantityMobile label.ng-binding"));
-            String productQuantityString = productQuantityElement.getText().trim();
-            int productQuantityAfterUpdate = Integer.parseInt(productQuantityString);
+            WebElement quantityLabel =
+                    row.findElement(By.cssSelector("td.smollCell.quantityMobile label.ng-binding"));
+            int updatedQuantity = Integer.parseInt(quantityLabel.getText().trim());
 
             softAssert.assertEquals(
-                    productQuantityAfterUpdate,
+                    updatedQuantity,
                     initialQuantity + 1,
                     "Failed to update the product quantity"
             );
@@ -308,5 +296,4 @@ public class CartTests extends BaseTest {
 
         System.out.println("TC_CART_03_validateUpdateProductFromCart passed successfully");
     }
-
 }
