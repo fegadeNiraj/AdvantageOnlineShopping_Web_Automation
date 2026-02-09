@@ -144,28 +144,43 @@ public class LoginTests extends BaseTest {
         System.out.println("TC_LOGOUT_01_validateLogoutUser passed successfully");
     }
 
-    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 4)
-    public void TC_LOGIN_03_validateEmptyUsernameLoginFieldValidations() throws IOException, InterruptedException, ParseException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    @Test(retryAnalyzer = RetryAnalyzer.class, priority = 4)
+    public void TC_LOGIN_03_validateEmptyUsernameLoginFieldValidations()
+            throws IOException, ParseException {
 
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         homePage.launchHomePage();
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
-        Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");
+
+        Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
         String password = userLoginDetails.get("password");
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormPassword)).sendKeys(password);
+
+        // Enter only password, leave username empty
+        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormPassword))
+                .sendKeys(password);
+
         loginPage.loginFormSignInButton.click();
 
         String errorMessageForUsername = (String) js.executeScript(
                 "let el = document.querySelector(\"sec-view[a-hint='Username'] label.invalid\");" +
-                        "return el ? el.innerText : null;");
+                        "return el ? el.innerText.trim() : null;"
+        );
 
-        softAssert.assertEquals(errorMessageForUsername,Constant.VALIDATION_ERROR_MESSAGES_FOR_BLANK_LOGIN_USERNAME);
-        System.out.println("TC_LOGIN_03_validateEmptyUsernameLoginFieldValidations passed successfully");
+        softAssert.assertEquals(
+                errorMessageForUsername,
+                Constant.VALIDATION_ERROR_MESSAGES_FOR_BLANK_LOGIN_USERNAME,
+                "Missing validation message for blank username"
+        );
+
+        System.out.println(
+                "TC_LOGIN_03_validateEmptyUsernameLoginFieldValidations passed successfully"
+        );
     }
 
     @Test(retryAnalyzer = RetryAnalyzer.class,priority = 5)
