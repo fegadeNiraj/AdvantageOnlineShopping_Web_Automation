@@ -1,6 +1,7 @@
 package Pages;
 
 import Util.PropertyReader;
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -36,6 +37,13 @@ public class HomePage {
         wait.until(ExpectedConditions.visibilityOf(homePageHeader));
 
     }
+
+    public void openCreateNewAccount() {
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        js.executeScript("arguments[0].scrollIntoView(true);", createNewAccount);
+        js.executeScript("arguments[0].click();", createNewAccount);
+    }
+
 
     public WebElement getUserIcon(){
         return userIcon;

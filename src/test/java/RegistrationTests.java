@@ -2,10 +2,7 @@ import Constant.Constant;
 import Core.BaseTest;
 import Pages.HomePage;
 import Pages.RegistrationPage;
-import Util.DataProviders;
-import Util.JsonReader;
-import Util.RetryAnalyzer;
-import Util.WaitUtils;
+import Util.*;
 import com.github.javafaker.Faker;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -21,13 +18,14 @@ import java.time.Duration;
 import java.util.Map;
 import java.util.List;
 
+import static Util.TestContext.registeredUserPassword;
+
 public class RegistrationTests extends BaseTest {
 
-    public static String registeredUserName;
-    public static String registeredUserPassword;
 
     @Test(retryAnalyzer = RetryAnalyzer.class, priority = 1)
-    public void TC_REG_01_validateUserRegistration() throws IOException, InterruptedException, ParseException {
+    public void TC_REG_01_validateUserRegistration()
+            throws IOException, InterruptedException, ParseException {
 
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
@@ -39,53 +37,46 @@ public class RegistrationTests extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getCreateNewAccount());
-        js.executeScript("arguments[0].click();", homePage.getCreateNewAccount());
-
+        homePage.openCreateNewAccount();
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
 
         Map<String, String> registerUserMap = JsonReader.getJsonMap("registerUser");
 
-        String randomUsername = registerUserMap.get("userName") + System.currentTimeMillis() % 100000;
-        registeredUserName = randomUsername;
+        String randomUsername =
+                registerUserMap.get("userName") + System.currentTimeMillis() % 100000;
+        String password = registerUserMap.get("password");
 
-        registrationPage.inputUserName.sendKeys(randomUsername);
-        registrationPage.inputEmailID.sendKeys(faker.internet().emailAddress());
-        registrationPage.inputPassword.sendKeys(registerUserMap.get("password"));
+        TestContext.registeredUserName = randomUsername;
+        TestContext.registeredUserPassword = password;
 
-        String passwordToBeConfirmed = registrationPage.inputPassword.getAttribute("value");
-        registeredUserPassword = passwordToBeConfirmed;
-        registrationPage.inputConfirmPassword.sendKeys(passwordToBeConfirmed);
+        registrationPage.fillBasicDetails(
+                randomUsername,
+                faker.internet().emailAddress(),
+                password,
+                registerUserMap.get("firstName"),
+                registerUserMap.get("lastName"),
+                registerUserMap.get("phoneNumber")
+        );
 
-        registrationPage.inputFirstName.sendKeys(registerUserMap.get("firstName"));
-        registrationPage.inputLastName.sendKeys(registerUserMap.get("lastName"));
-        registrationPage.inputPhoneNumber.sendKeys(registerUserMap.get("phoneNumber"));
+        registrationPage.selectCountry(registerUserMap.get("countryName"), wait);
 
-        Select countryList = new Select(registrationPage.inputCountryName);
-        wait.until(driver1 -> {
-            for (WebElement option : countryList.getOptions()) {
-                if (option.getText().trim().equals(registerUserMap.get("countryName"))) {
-                    return true;
-                }
-            }
-            return false;
-        });
-        countryList.selectByVisibleText(registerUserMap.get("countryName"));
+        registrationPage.fillAddressDetails(
+                registerUserMap.get("cityName"),
+                registerUserMap.get("address"),
+                registerUserMap.get("stateName"),
+                registerUserMap.get("postalCode")
+        );
 
-        registrationPage.inputCityName.sendKeys(registerUserMap.get("cityName"));
-        registrationPage.inputAddress.sendKeys(registerUserMap.get("address"));
-        registrationPage.inputStateName.sendKeys(registerUserMap.get("stateName"));
-        registrationPage.inputPostalCode.sendKeys(registerUserMap.get("postalCode"));
-
-        registrationPage.userRegisterAgreeCheckbox.click();
-        registrationPage.userRegisterButton.click();
+        registrationPage.submitRegistration();
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.registeredUserName));
-        String actualRegisteredUserName = registrationPage.registeredUserName.getText();
-        String expectedUserName = randomUsername;
+        String actualRegisteredUserName = registrationPage.getRegisteredUserName();
 
-        softAssert.assertEquals(actualRegisteredUserName, expectedUserName, "User is not registered correctly");
+        softAssert.assertEquals(
+                actualRegisteredUserName,
+                randomUsername,
+                "User is not registered correctly"
+        );
 
         System.out.println("TC_REG_01_validateUserRegistration passed successfully");
     }
@@ -106,16 +97,14 @@ public class RegistrationTests extends BaseTest {
         homePage.getUserIcon().click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        js.executeScript("arguments[0].scrollIntoView(true)", homePage.getCreateNewAccount());
-        js.executeScript("arguments[0].click()", homePage.getCreateNewAccount());
-
+        homePage.openCreateNewAccount();
         String registerPageUrl = driver.getCurrentUrl();
 
         wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
 
-        registrationPage.inputUserName.sendKeys(registeredUserName);
+        registrationPage.inputUserName.sendKeys(TestContext.registeredUserName);
         registrationPage.inputEmailID.sendKeys(fakeData.internet().emailAddress());
-        registrationPage.inputPassword.sendKeys(registeredUserPassword);
+        registrationPage.inputPassword.sendKeys(TestContext.registeredUserPassword);
 
         String passwordToBeConfirmed = registrationPage.inputPassword.getAttribute("value");
         softAssert.assertNotNull(passwordToBeConfirmed, "Password confirmation should not be null");

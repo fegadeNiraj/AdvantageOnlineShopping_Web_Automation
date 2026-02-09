@@ -1,9 +1,12 @@
 package Pages;
 
+import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class RegistrationPage
 {
@@ -65,4 +68,56 @@ public class RegistrationPage
 
     @FindBy(xpath = "//label[@data-ng-show='!registerSuccess']")
     public WebElement userAlreadyExistsMessage;
+
+    public void fillBasicDetails(
+            String username,
+            String email,
+            String password,
+            String firstName,
+            String lastName,
+            String phoneNumber
+    ) {
+        inputUserName.sendKeys(username);
+        inputEmailID.sendKeys(email);
+        inputPassword.sendKeys(password);
+        inputConfirmPassword.sendKeys(password);
+        inputFirstName.sendKeys(firstName);
+        inputLastName.sendKeys(lastName);
+        inputPhoneNumber.sendKeys(phoneNumber);
+    }
+
+    public void selectCountry(String countryName, WebDriverWait wait) {
+        Select select = new Select(inputCountryName);
+        wait.until(d ->
+                select.getOptions()
+                        .stream()
+                        .anyMatch(o -> o.getText().trim().equals(countryName))
+        );
+        select.selectByVisibleText(countryName);
+    }
+
+    public void fillAddressDetails(
+            String city,
+            String address,
+            String state,
+            String postalCode
+    ) {
+        inputCityName.sendKeys(city);
+        inputAddress.sendKeys(address);
+        inputStateName.sendKeys(state);
+        inputPostalCode.sendKeys(postalCode);
+    }
+
+    public void submitRegistration() {
+        userRegisterAgreeCheckbox.click();
+        userRegisterButton.click();
+    }
+
+    public String getRegisteredUserName() {
+        return registeredUserName.getText();
+    }
+
+
+
+
 }

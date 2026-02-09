@@ -4,6 +4,7 @@ import Pages.HomePage;
 import Pages.LoginPage;
 import Util.JsonReader;
 import Util.RetryAnalyzer;
+import Util.TestContext;
 import Util.WaitUtils;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.JavascriptExecutor;
@@ -30,9 +31,9 @@ public class LoginTests extends BaseTest {
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        loginPage.inputLoginFormUserName.sendKeys(RegistrationTests.registeredUserName);
+        loginPage.inputLoginFormUserName.sendKeys(TestContext.registeredUserName);
         String userName = loginPage.inputLoginFormUserName.getAttribute("value");
-        loginPage.inputLoginFormPassword.sendKeys(RegistrationTests.registeredUserPassword);
+        loginPage.inputLoginFormPassword.sendKeys(TestContext.registeredUserPassword);
 
         loginPage.loginFormSignInButton.click();
         wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
@@ -57,7 +58,7 @@ public class LoginTests extends BaseTest {
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(RegistrationTests.registeredUserName);
+        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(TestContext.registeredUserName);
         String userName = loginPage.inputLoginFormUserName.getAttribute("value");
         wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormPassword)).sendKeys(Constant.USER_INCORRECT_LOGINPASSWORD);
 
