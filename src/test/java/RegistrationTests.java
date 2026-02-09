@@ -142,23 +142,21 @@ public class RegistrationTests extends BaseTest {
     }
 
     @Test(retryAnalyzer = RetryAnalyzer.class, priority = 3)
-    public void TC_REG_03_validateRequiredErrorsOnEmptyFields() throws IOException, InterruptedException {
+    public void TC_REG_03_validateRequiredErrorsOnEmptyFields()
+            throws IOException {
 
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
 
         homePage.launchHomePage();
-
         homePage.getUserIcon().click();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getCreateNewAccount());
-        js.executeScript("arguments[0].click();", homePage.getCreateNewAccount());
+        homePage.openCreateNewAccount();
 
-        wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
+        wait.until(ExpectedConditions.visibilityOf(registrationPage.inputUserName));
 
         registrationPage.inputUserName.click();
         registrationPage.inputUserName.sendKeys(Keys.TAB);
@@ -172,19 +170,28 @@ public class RegistrationTests extends BaseTest {
         registrationPage.inputConfirmPassword.click();
         registrationPage.inputConfirmPassword.sendKeys(Keys.TAB);
 
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+
         @SuppressWarnings("unchecked")
         List<String> actualMessages = (List<String>) js.executeScript(
                 "let labels = document.querySelectorAll('label.invalid');" +
                         "let messages = [];" +
-                        "for (let lbl of labels) { if (lbl.innerText) messages.push(lbl.innerText.trim()); }" +
+                        "for (let lbl of labels) {" +
+                        "  if (lbl.innerText) messages.push(lbl.innerText.trim());" +
+                        "}" +
                         "return messages;"
         );
 
-        for (String errorMessage : Constant.VALIDATION_ERROR_MESSAGES) {
-            softAssert.assertTrue(actualMessages.contains(errorMessage),
-                    "Missing expected validation message: " + errorMessage);
+        for (String expectedMessage : Constant.VALIDATION_ERROR_MESSAGES) {
+            softAssert.assertTrue(
+                    actualMessages.contains(expectedMessage),
+                    "Missing expected validation message: " + expectedMessage
+            );
         }
-        System.out.println("TC_REG_03_validateRequiredErrorsOnEmptyFields passed successfully");
+
+        System.out.println(
+                "TC_REG_03_validateRequiredErrorsOnEmptyFields passed successfully"
+        );
     }
 
     @Test(dataProvider = "invalidEmailID", dataProviderClass = DataProviders.class, priority = 4, retryAnalyzer = RetryAnalyzer.class)
