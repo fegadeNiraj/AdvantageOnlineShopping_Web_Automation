@@ -91,7 +91,9 @@ public class CartTests extends BaseTest {
     }
 
     @Test(retryAnalyzer = RetryAnalyzer.class, priority = 2)
-    public void TC_CART_02_validateRemoveProductFromCart() throws IOException, ParseException, InterruptedException {
+    public void TC_CART_02_validateRemoveProductFromCart()
+            throws IOException, ParseException {
+
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
         ProductPage productPage = new ProductPage(driver);
@@ -100,88 +102,83 @@ public class CartTests extends BaseTest {
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(20));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
-        // Launch home page and login
+        // ---------- Launch & Login ----------
         homePage.launchHomePage();
-
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getUserIcon());
         js.executeScript("arguments[0].click();", homePage.getUserIcon());
         WaitUtils.waitForElementToBeInvisible(driver);
 
         Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
-        loginPage.inputLoginFormUserName.sendKeys(userLoginDetails.get("userName"));
-        loginPage.inputLoginFormPassword.sendKeys(userLoginDetails.get("password"));
+        loginPage.login(
+                userLoginDetails.get("userName"),
+                userLoginDetails.get("password")
+        );
 
-        js.executeScript("arguments[0].scrollIntoView(true);", loginPage.loginFormSignInButton);
-        js.executeScript("arguments[0].click();", loginPage.loginFormSignInButton);
+        wait.until(d -> !loginPage.getLoggedInUserName().isEmpty());
 
-        wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
-
-        // Navigate to laptops
+        // ---------- Navigate & Add Product ----------
         wait.until(ExpectedConditions.visibilityOf(productPage.laptops));
         js.executeScript("arguments[0].scrollIntoView(true);", productPage.laptops);
         js.executeScript("arguments[0].click();", productPage.laptops);
-
         WaitUtils.waitForElementToBeInvisible(driver);
+
         wait.until(ExpectedConditions.visibilityOf(productPage.laptopToBeSelected));
         js.executeScript("arguments[0].scrollIntoView(true);", productPage.laptopToBeSelected);
         js.executeScript("arguments[0].click();", productPage.laptopToBeSelected);
 
-        String selectedProduct = productPage.laptopToBeSelected.getText().trim().toUpperCase();
+        String selectedProduct =
+                productPage.laptopToBeSelected.getText().trim().toUpperCase();
 
         wait.until(ExpectedConditions.visibilityOf(productPage.laptopToBeSelectedDescription));
-        wait.until(ExpectedConditions.elementToBeClickable(productPage.selectGreyColor));
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.selectGreyColor);
         js.executeScript("arguments[0].click();", productPage.selectGreyColor);
 
-        // Get initial cart count
-        String cartCountStr = (String) js.executeScript(
+        String cartCountBeforeStr = (String) js.executeScript(
                 "return document.querySelector('#shoppingCartLink .cart').textContent.trim();"
         );
+        int cartCountBefore = cartCountBeforeStr.isEmpty()
+                ? 0
+                : Integer.parseInt(cartCountBeforeStr);
 
-        softAssert.assertNotNull(cartCountStr, "Initial cart count is null");
-        int cartCountBefore = cartCountStr.isEmpty() ? 0 : Integer.parseInt(cartCountStr);
-
-        wait.until(ExpectedConditions.elementToBeClickable(productPage.addToCartButton));
-        js.executeScript("arguments[0].scrollIntoView(true);", productPage.addToCartButton);
         js.executeScript("arguments[0].click();", productPage.addToCartButton);
 
-        // Wait for cart count to increase by 1
         wait.until(driver -> {
-            String updatedStr = (String) js.executeScript(
+            String updated = (String) js.executeScript(
                     "return document.querySelector('#shoppingCartLink .cart').textContent.trim();"
             );
-            if (updatedStr == null || updatedStr.isEmpty()) return false;
-            int updatedCount = Integer.parseInt(updatedStr);
-            return updatedCount == cartCountBefore + 1;
+            return updated != null
+                    && !updated.isEmpty()
+                    && Integer.parseInt(updated) == cartCountBefore + 1;
         });
 
-        wait.until(ExpectedConditions.elementToBeClickable(checkoutPage.cartIcon));
-        js.executeScript("arguments[0].scrollIntoView(true);", checkoutPage.cartIcon);
+        // ---------- Open Cart ----------
         js.executeScript("arguments[0].click();", checkoutPage.cartIcon);
-
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#shoppingCart")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#shoppingCart tbody tr")));
 
-        List<WebElement> cartRows = driver.findElements(By.cssSelector("#shoppingCart tbody tr"));
+        // ---------- Remove Product ----------
+        List<WebElement> cartRows =
+                driver.findElements(By.cssSelector("#shoppingCart tbody tr"));
 
         for (WebElement row : cartRows) {
-            WebElement productNameElement = row.findElement(By.cssSelector("label.productName"));
-            String productName = productNameElement.getText().trim();
+            String productName =
+                    row.findElement(By.cssSelector("label.productName"))
+                            .getText()
+                            .trim();
 
             if (productName.equals(selectedProduct)) {
                 WebElement removeButton = row.findElement(By.cssSelector("a.remove"));
-                js.executeScript("arguments[0].scrollIntoView(true);", removeButton);
                 js.executeScript("arguments[0].click();", removeButton);
                 break;
             }
         }
 
-        wait.until(ExpectedConditions.visibilityOf(checkoutPage.emptyCartMessage));
+        // ---------- Final Assertion ----------
         wait.until(ExpectedConditions.textToBePresentInElement(
-                checkoutPage.emptyCartMessage, Constant.EMPTY_CART_MESSAGE));
+                checkoutPage.emptyCartMessage,
+                Constant.EMPTY_CART_MESSAGE
+        ));
 
-        softAssert.assertTrue(
-                checkoutPage.emptyCartMessage.getText().trim().equals(Constant.EMPTY_CART_MESSAGE),
+        softAssert.assertEquals(
+                checkoutPage.emptyCartMessage.getText().trim(),
+                Constant.EMPTY_CART_MESSAGE,
                 "Expected the cart to be empty"
         );
 
