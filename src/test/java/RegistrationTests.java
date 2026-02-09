@@ -194,35 +194,46 @@ public class RegistrationTests extends BaseTest {
         );
     }
 
-    @Test(dataProvider = "invalidEmailID", dataProviderClass = DataProviders.class, priority = 4, retryAnalyzer = RetryAnalyzer.class)
-    public void TC_REG_04_validateRequiredValidationsOnInvalidEmailFormat(String emailID) throws IOException {
+    @Test(
+            dataProvider = "invalidEmailID",
+            dataProviderClass = DataProviders.class,
+            priority = 4,
+            retryAnalyzer = RetryAnalyzer.class
+    )
+    public void TC_REG_04_validateRequiredValidationsOnInvalidEmailFormat(String emailID)
+            throws IOException {
 
         HomePage homePage = new HomePage(driver);
         RegistrationPage registrationPage = new RegistrationPage(driver);
 
         homePage.launchHomePage();
-
         homePage.getUserIcon().click();
 
         WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        JavascriptExecutor js = (JavascriptExecutor) driver;
-        js.executeScript("arguments[0].scrollIntoView(true);", homePage.getCreateNewAccount());
-        js.executeScript("arguments[0].click();", homePage.getCreateNewAccount());
+        homePage.openCreateNewAccount();
 
-        wait.until(ExpectedConditions.visibilityOf(registrationPage.createNewAccountForm));
+        wait.until(ExpectedConditions.visibilityOf(registrationPage.inputEmailID));
 
         registrationPage.inputEmailID.sendKeys(emailID);
         registrationPage.inputEmailID.sendKeys(Keys.TAB);
 
+        JavascriptExecutor js = (JavascriptExecutor) driver;
         String actualErrorMessage = (String) js.executeScript(
-                "let label = document.querySelector('label.animated.invalid').innerText;" +
-                        "return label;"
+                "let label = document.querySelector('label.animated.invalid');" +
+                        "return label ? label.innerText.trim() : null;"
         );
 
-        softAssert.assertEquals(actualErrorMessage, Constant.INVALID_EMAIL_FORMAT_ERROR_MESSAGE,
-                "Missing expected validation message for Email ID");
-        System.out.println("TC_REG_04_validateRequiredValidationsOnInvalidEmailFormat passed successfully");
+        softAssert.assertEquals(
+                actualErrorMessage,
+                Constant.INVALID_EMAIL_FORMAT_ERROR_MESSAGE,
+                "Missing expected validation message for Email ID"
+        );
+
+        System.out.println(
+                "TC_REG_04_validateRequiredValidationsOnInvalidEmailFormat passed successfully"
+        );
     }
+
 }
