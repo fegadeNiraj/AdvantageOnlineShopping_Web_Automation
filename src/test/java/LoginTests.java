@@ -230,46 +230,62 @@ public class LoginTests extends BaseTest {
         );
     }
 
-
-    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 6)
-    public void TC_LOGIN_05_validateLoginWithCaseSensitiveDetails() throws IOException, ParseException, InterruptedException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+    @Test(retryAnalyzer = RetryAnalyzer.class, priority = 6)
+    public void TC_LOGIN_05_validateLoginWithCaseSensitiveDetails()
+            throws IOException, ParseException, InterruptedException {
 
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         homePage.launchHomePage();
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");
+        Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
+
         String usernameUpper = userLoginDetails.get("userName").toUpperCase();
         String passwordUpper = userLoginDetails.get("password").toUpperCase();
 
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(usernameUpper);
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormPassword)).sendKeys(passwordUpper);
-        wait.until(ExpectedConditions.elementToBeClickable(loginPage.loginFormSignInButton)).click();
-        wait.until(ExpectedConditions.textToBePresentInElement(loginPage.loginErrorMessage,Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE));
+        // Attempt login with uppercase credentials
+        loginPage.login(usernameUpper, passwordUpper);
 
-        softAssert.assertEquals(loginPage.loginErrorMessage.getText(),Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE,"Failed to get 'Incorrect user name or password' message");
+        wait.until(
+                ExpectedConditions.textToBePresentInElement(
+                        loginPage.loginErrorMessage,
+                        Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE
+                )
+        );
 
-        String usernameLower = usernameUpper.toLowerCase();
-        String passwordLower = passwordUpper.toLowerCase();
+        softAssert.assertEquals(
+                loginPage.getLoginErrorMessage(),
+                Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE,
+                "Failed to get error message for uppercase credentials"
+        );
 
-        loginPage.inputLoginFormUserName.clear();
-        loginPage.inputLoginFormPassword.clear();
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(usernameLower);
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormPassword)).sendKeys(passwordLower);
-        wait.until(ExpectedConditions.elementToBeClickable(loginPage.loginFormSignInButton)).click();
+        String usernameLower = userLoginDetails.get("userName").toLowerCase();
+        String passwordLower = userLoginDetails.get("password").toLowerCase();
 
-        wait.until(ExpectedConditions.textToBePresentInElement(loginPage.loginErrorMessage,Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE));
+        // Attempt login with lowercase credentials
+        loginPage.login(usernameLower, passwordLower);
 
-        softAssert.assertEquals(loginPage.loginErrorMessage.getText(),Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE,"Failed to get 'Incorrect user name or password' message");
+        wait.until(
+                ExpectedConditions.textToBePresentInElement(
+                        loginPage.loginErrorMessage,
+                        Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE
+                )
+        );
 
+        softAssert.assertEquals(
+                loginPage.getLoginErrorMessage(),
+                Constant.INCORRECT_USERNAME_OR_PASSWORD_ERRORMESSAGE,
+                "Failed to get error message for lowercase credentials"
+        );
 
-        System.out.println("TC_LOGIN_05_validateLoginWithCaseSensitiveDetails passed successfully");
-
+        System.out.println(
+                "TC_LOGIN_05_validateLoginWithCaseSensitiveDetails passed successfully"
+        );
     }
-
 
 }

@@ -34,6 +34,8 @@ public class LoginPage {
     public WebElement singOutButton;
 
     public void login(String username, String password) {
+        inputLoginFormUserName.clear();
+        inputLoginFormPassword.clear();
         inputLoginFormUserName.sendKeys(username);
         inputLoginFormPassword.sendKeys(password);
         loginFormSignInButton.click();
