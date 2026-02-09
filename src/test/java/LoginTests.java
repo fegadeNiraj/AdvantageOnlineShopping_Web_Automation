@@ -183,31 +183,53 @@ public class LoginTests extends BaseTest {
         );
     }
 
-    @Test(retryAnalyzer = RetryAnalyzer.class,priority = 5)
-    public void TC_LOGIN_04_validateEmptyPasswordLoginFieldValidations() throws IOException, InterruptedException, ParseException {
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+    @Test(retryAnalyzer = RetryAnalyzer.class, priority = 5)
+    public void TC_LOGIN_04_validateEmptyPasswordLoginFieldValidations()
+            throws IOException, InterruptedException, ParseException {
 
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         JavascriptExecutor js = (JavascriptExecutor) driver;
 
         homePage.launchHomePage();
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
-        Map<String,String> userLoginDetails = JsonReader.getJsonMap("existingUser");
+
+        // Use deterministic data
+        Map<String, String> userLoginDetails = JsonReader.getJsonMap("existingUser");
         String username = userLoginDetails.get("userName");
-        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName)).sendKeys(username);
+
+        wait.until(ExpectedConditions.visibilityOf(loginPage.inputLoginFormUserName))
+                .sendKeys(username);
+
         loginPage.inputLoginFormUserName.sendKeys(Keys.TAB);
         loginPage.loginFormSignInButton.click();
 
-        Thread.sleep(2000);
+        // Wait for validation error to appear instead of Thread.sleep
+        wait.until(driver ->
+                js.executeScript(
+                        "return document.querySelector(\"sec-view[sec-model='loginUser.loginPassword'] label.invalid\") != null;"
+                ).equals(Boolean.TRUE)
+        );
+
         String errorMessageForPassword = (String) js.executeScript(
                 "let el = document.querySelector(\"sec-view[sec-model='loginUser.loginPassword'] label.invalid\");" +
-                        "return el ? el.innerText : null;");
+                        "return el ? el.innerText.trim() : null;"
+        );
 
-        softAssert.assertEquals(errorMessageForPassword,Constant.VALIDATION_ERROR_MESSAGES_FOR_BLANK_LOGIN_PASSWORD);
-        System.out.println("TC_LOGIN_04_validateEmptyPasswordLoginFieldValidations passed successfully");
+        softAssert.assertEquals(
+                errorMessageForPassword,
+                Constant.VALIDATION_ERROR_MESSAGES_FOR_BLANK_LOGIN_PASSWORD,
+                "Missing validation message for blank password"
+        );
+
+        System.out.println(
+                "TC_LOGIN_04_validateEmptyPasswordLoginFieldValidations passed successfully"
+        );
     }
+
 
     @Test(retryAnalyzer = RetryAnalyzer.class,priority = 6)
     public void TC_LOGIN_05_validateLoginWithCaseSensitiveDetails() throws IOException, ParseException, InterruptedException {
