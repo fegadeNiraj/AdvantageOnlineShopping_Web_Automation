@@ -7,9 +7,7 @@ import com.github.javafaker.Faker;
 import org.json.simple.parser.ParseException;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.Test;
 
@@ -17,8 +15,6 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
 import java.util.List;
-
-import static Util.TestContext.registeredUserPassword;
 
 public class RegistrationTests extends BaseTest {
 

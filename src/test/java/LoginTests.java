@@ -19,30 +19,44 @@ import java.util.Map;
 
 public class LoginTests extends BaseTest {
 
-    @Test(dependsOnMethods = "RegistrationTests.TC_REG_01_validateUserRegistration",retryAnalyzer = RetryAnalyzer.class,priority = 1)
-    public void TC_LOGIN_01_validateLoginUser() throws IOException, InterruptedException {
-
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
+    @Test(
+            dependsOnMethods = "RegistrationTests.TC_REG_01_validateUserRegistration",
+            retryAnalyzer = RetryAnalyzer.class,
+            priority = 1
+    )
+    public void TC_LOGIN_01_validateLoginUser()
+            throws IOException {
 
         HomePage homePage = new HomePage(driver);
         LoginPage loginPage = new LoginPage(driver);
+
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(30));
 
         homePage.launchHomePage();
         wait.until(ExpectedConditions.elementToBeClickable(homePage.getUserIcon())).click();
         WaitUtils.waitForElementToBeInvisible(driver);
 
-        loginPage.inputLoginFormUserName.sendKeys(TestContext.registeredUserName);
-        String userName = loginPage.inputLoginFormUserName.getAttribute("value");
-        loginPage.inputLoginFormPassword.sendKeys(TestContext.registeredUserPassword);
+        loginPage.login(
+                TestContext.registeredUserName,
+                TestContext.registeredUserPassword
+        );
 
-        loginPage.loginFormSignInButton.click();
-        wait.until(ExpectedConditions.visibilityOf(loginPage.loggedInUserName));
+        // wait for login to complete (user name visible)
+        wait.until(d -> !loginPage.getLoggedInUserName().isEmpty());
 
-        String loggedInUserName = loginPage.loggedInUserName.getText();
-        String expectedLoggedInUserName = userName;
+        String actualLoggedInUserName = loginPage.getLoggedInUserName();
 
-        softAssert.assertEquals(loggedInUserName,expectedLoggedInUserName,"User Login Failed");
-        softAssert.assertEquals(driver.getCurrentUrl(), Constant.LOGGEDIN_PAGE_URL,"User is not on the Logged in page. URL mismatch after Login.");
+        softAssert.assertEquals(
+                actualLoggedInUserName,
+                TestContext.registeredUserName,
+                "User Login Failed"
+        );
+
+        softAssert.assertEquals(
+                driver.getCurrentUrl(),
+                Constant.LOGGEDIN_PAGE_URL,
+                "User is not on the Logged in page. URL mismatch after Login."
+        );
 
         System.out.println("TC_LOGIN_01_validateLoginUser passed successfully");
     }

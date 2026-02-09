@@ -32,4 +32,15 @@ public class LoginPage {
 
     @FindBy(xpath = "//label[@role='link'][normalize-space()='Sign out']")
     public WebElement singOutButton;
+
+    public void login(String username, String password) {
+        inputLoginFormUserName.sendKeys(username);
+        inputLoginFormPassword.sendKeys(password);
+        loginFormSignInButton.click();
+    }
+
+    public String getLoggedInUserName() {
+        return loggedInUserName.getText();
+    }
+
 }
