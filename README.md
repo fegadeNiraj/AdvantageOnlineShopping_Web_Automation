@@ -24,8 +24,6 @@ The framework follows industry best practices such as **Page Object Model (POM)*
 ```
 AdvantageOnlineShopping_Web_Automation
 ├── Resources
-│   ├── Drivers
-│   │   └── chromedriver
 │   ├── TestData
 │   │   └── testdata.json
 │   └── testng.xml
