@@ -20,6 +20,21 @@ The framework follows industry best practices such as **Page Object Model (POM)*
 
 ---
 
+🧰 Tech Stack
+Language: Java
+
+UI Automation: Selenium WebDriver
+
+Test Framework: TestNG
+
+Build Tool: Maven
+
+Reports: Allure
+
+Design Pattern: Page Object Model (POM)
+
+Browser: Chrome (Headless supported)
+
 ## 📂 Project Structure
 ```
 AdvantageOnlineShopping_Web_Automation
@@ -76,15 +91,6 @@ Run Tests Using Maven
 ```bash
 mvn clean test
 ```
-
-🧰 Tech Stack
-Language: Java 21
-UI Automation: Selenium WebDriver 4
-Test Framework: TestNG
-Build Tool: Maven
-Reports: Allure
-Design Pattern: Page Object Model (POM)
-Browser: Chrome (Headless supported)
 
 👤 Author
 
