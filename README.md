@@ -7,9 +7,9 @@ The framework follows industry best practices such as **Page Object Model (POM)*
 
 ## 📌 Features
 
-✅ Selenium 4 based UI automation  
+✅ Selenium-based UI automation  
 ✅ Page Object Model (POM) architecture  
-✅ TestNG based execution  
+✅ TestNG-based execution  
 ✅ Centralized WebDriver management  
 ✅ Headless Chrome execution (CI-ready)  
 ✅ Soft Assertions for comprehensive validation  
@@ -69,7 +69,7 @@ The automation suite covers the following functional areas:
 🚀 How to Run
 Clone the Repository
 ```bash
-git clone https://github.com/Niraj98-QA/AdvantageOnlineShopping_Web_Automation.git
+git clone https://github.com/fegadeNiraj/AdvantageOnlineShopping_Web_Automation.git
 ```
 
 Run Tests Using Maven
@@ -86,15 +86,9 @@ Reports: Allure
 Design Pattern: Page Object Model (POM)
 Browser: Chrome (Headless supported)
 
-🔮 Future Enhancements
-
-CI/CD integration (GitHub Actions / Jenkins)
-
 👤 Author
 
-Niraj Fegade
-Automation / SDET Engineer
-Java | Selenium | TestNG | API & Web Automation
+Niraj Fegade | SDET | nirajfegade4@gmail.com | linkedin.com/in/niraj-fegade
 
 
 
